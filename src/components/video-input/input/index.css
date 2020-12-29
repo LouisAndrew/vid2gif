@@ -1,0 +1,7 @@
+label #top {
+    transition: 0.2s;
+}
+
+label.on-drag #top {
+    transform: rotate(10deg) translate(1px, -4px);
+}

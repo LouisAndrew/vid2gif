@@ -1,0 +1,19 @@
+.gif-enter {
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    transform: translateX(100px);
+}
+.gif-enter-active {
+    opacity: 1;
+    max-height: max-content;
+    transition: 200ms;
+    transform: translateX(0);
+}
+.gif-exit {
+    opacity: 1;
+}
+.gif-exit-active {
+    opacity: 0;
+    transition: opacity 200ms;
+}

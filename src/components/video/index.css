@@ -1,0 +1,32 @@
+.video-enter {
+    opacity: 0;
+}
+.video-enter-active {
+    opacity: 1;
+    transition: opacity 200ms;
+}
+.video-exit {
+    opacity: 1;
+}
+.video-exit-active {
+    opacity: 0;
+    transition: opacity 200ms;
+    transform: translateX(-100%);
+}
+
+@keyframes fade-in {
+    25% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+#uploaded-video {
+    animation-name: fade-in;
+    animation-duration: 500ms;
+}
