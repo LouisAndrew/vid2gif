@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-
 import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
+import axios from 'axios';
+
 import { CSSTransition } from 'react-transition-group';
 import Loader from 'react-loader-spinner';
 
@@ -67,15 +68,26 @@ function App() {
     const [gifUrl, setGifUrl] = useState('');
     const [showGif, setShowGif] = useState(false);
 
+    // Boolean identifier to identify if the video should be converted on server.
+    const [convertWithApi, setConvertWithApi] = useState(false);
+
+    const debugFallback = true; // debug purposes for firefox.
+
     /**
      * Loads the ffmpeg library
      */
     const load = async () => {
-        try {
-            await ffmpeg.load();
+        if (!debugFallback) {
+            try {
+                await ffmpeg.load();
+            } catch (e) {
+                setConvertWithApi(true);
+            } finally {
+                setFfmpegLoadState(FFMPEGLoadState.READY);
+            }
+        } else {
+            setConvertWithApi(true);
             setFfmpegLoadState(FFMPEGLoadState.READY);
-        } catch (e) {
-            setFfmpegLoadState(FFMPEGLoadState.ERROR);
         }
     };
     /**
@@ -87,11 +99,46 @@ function App() {
     };
 
     /**
+     * Function to call server-side conversion
+     */
+    const convertServerSide = async () => {
+        if (!video) {
+            setState(AppState.ERROR);
+            return;
+        }
+
+        // formdata: enables file uploading
+        const formData = new FormData();
+        formData.append('video', video);
+
+        try {
+            // hitting the api route from next js.
+            const req = await axios({
+                method: 'POST',
+                url: '/api/file-upload',
+                data: formData,
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
+
+            console.log(await req);
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setState(AppState.DEFAULT);
+        }
+    };
+
+    /**
      * Function to convert the given video file into a GIF
      * @param flags flags that should be added to the ffmpeg command
      */
     const convert = async (flags: string[]) => {
         await setState(AppState.CONVERTING);
+
+        if (convertWithApi) {
+            convertServerSide();
+            return;
+        }
 
         if (video) {
             const [timeFlag, outputDuration, ...others] = flags;
