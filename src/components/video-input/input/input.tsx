@@ -1,9 +1,6 @@
 import { useRef, useState, ChangeEvent } from 'react';
 
-// import { TweenLite } from 'gsap';
-
 import Archive from './assets/archive';
-import './index.css';
 
 type Props = {
     /**

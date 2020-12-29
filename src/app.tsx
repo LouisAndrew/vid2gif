@@ -10,7 +10,6 @@ import Video from './components/video';
 import Gif from './components/gif';
 
 import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
-import './index.css';
 
 /**
  * Enumeration for the state of the app. used as a message between components

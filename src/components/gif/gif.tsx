@@ -1,9 +1,3 @@
-// import {} from 'react';
-// import styling libs
-// import local components
-
-import './index.css';
-
 type Props = {
     /**
      * Url of the output gif

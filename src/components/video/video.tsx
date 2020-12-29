@@ -1,10 +1,5 @@
 import { FC, useRef, useState, useEffect } from 'react';
-// import styling libs
-// import local components
-
 import Settings, { ConvertionSettings } from './settings';
-
-import './index.css';
 
 type Props = {
     /**

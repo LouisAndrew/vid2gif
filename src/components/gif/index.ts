@@ -1,4 +1,3 @@
-
-import {Gif} from './gif';
+import { Gif } from './gif';
 
 export default Gif;

@@ -2,7 +2,7 @@
 // import styling libs
 // import local components
 
-import { AppState } from '../../App';
+import { AppState } from '../../app';
 import messages from './messages';
 
 type Props = {
