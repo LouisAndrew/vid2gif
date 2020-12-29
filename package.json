@@ -13,6 +13,7 @@
     "@ffmpeg/ffmpeg": "^0.9.6",
     "@zeit/next-css": "^1.0.1",
     "autoprefixer": "^10.1.0",
+    "axios": "^0.21.1",
     "gsap": "^3.5.1",
     "next": "10.0.4",
     "postcss": "^8.2.1",
