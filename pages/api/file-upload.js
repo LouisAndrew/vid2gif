@@ -10,15 +10,13 @@ export const config = {
 
 export default (req, res) =>
     new Promise((resolve, reject) => {
-        const form = formidable({ uploadDir: 'files' });
         form.keepExtensions = true;
 
         const publicPath =
-            process.env.NODE_ENV === 'production'
-                ? './public'
-                : `${__dirname}/public`;
+            process.env.NODE_ENV === 'production' ? '/' : `${__dirname}/public`;
 
-        const dir = path.resolve(publicPath, 'files');
+        const dir = path.resolve(publicPath);
+        const form = formidable({ uploadDir: dir });
 
         const functionPath = path.resolve(publicPath, 'function/transcode.js');
 
