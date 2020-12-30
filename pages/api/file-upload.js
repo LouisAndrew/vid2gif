@@ -14,7 +14,7 @@ export default (req, res) =>
         form.keepExtensions = true;
 
         form.on('fileBegin', (name, file) => {
-            file.path = path.join('files', 'in.mp4');
+            file.path = path.join(__dirname, 'files', 'in.mp4');
         });
 
         form.parse(req, async (err, fields, file) => {
