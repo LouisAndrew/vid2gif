@@ -100,8 +100,9 @@ function App() {
 
     /**
      * Function to call server-side conversion
+     * @param flags flags that should be added to the ffmpeg command
      */
-    const convertServerSide = async () => {
+    const convertServerSide = async (flags: string[]) => {
         if (!video) {
             setState(AppState.ERROR);
             return;
@@ -110,21 +111,22 @@ function App() {
         // formdata: enables file uploading
         const formData = new FormData();
         formData.append('video', video);
+        formData.append('flags', flags.join(','));
 
         try {
             // hitting the api route from next js.
-            const req = await axios({
+            await axios({
                 method: 'POST',
                 url: '/api/file-upload',
                 data: formData,
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
 
-            console.log(await req);
+            await setGifUrl('filesystem'); // filesystem means that gif should be served from public directory
+            await setState(AppState.DONE);
+            await setShowGif(true);
         } catch (e) {
             console.error(e);
-        } finally {
-            setState(AppState.DEFAULT);
         }
     };
 
@@ -136,7 +138,7 @@ function App() {
         await setState(AppState.CONVERTING);
 
         if (convertWithApi) {
-            convertServerSide();
+            convertServerSide(flags);
             return;
         }
 
@@ -169,8 +171,6 @@ function App() {
             );
 
             await setGifUrl(url);
-
-            // await ffmpeg.FS('unlink', 'out.gif');
 
             await setState(AppState.DONE);
             await setShowGif(true);

@@ -17,6 +17,7 @@
     "formidable-serverless": "^1.0.3",
     "gsap": "^3.5.1",
     "next": "10.0.4",
+    "next-images": "^1.6.2",
     "postcss": "^8.2.1",
     "react": "17.0.1",
     "react-dom": "17.0.1",

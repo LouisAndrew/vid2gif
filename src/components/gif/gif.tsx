@@ -1,3 +1,5 @@
+// import gif from '../../../files/out.gif'; // files/out.gif must exist and next-images deps must be installed
+
 type Props = {
     /**
      * Url of the output gif
@@ -13,6 +15,8 @@ type Props = {
  * Component where the gif result of the conversion is shown.
  */
 const Gif: React.FC<Props> = ({ gifUrl, showVideo }) => {
+    const createUrl = () => {};
+
     return (
         <div className="w-full flex-shrink-0">
             <div className="flex flex-row justify-between">
@@ -26,13 +30,16 @@ const Gif: React.FC<Props> = ({ gifUrl, showVideo }) => {
             </div>
             <img
                 className="rounded-md shadow-2xl overflow-hidden my-2"
-                src={gifUrl}
+                src={gifUrl === 'filesystem' ? '/out.gif' : gifUrl} // serving from public dir if gifUrl is filesystem.
                 alt="output GIF"
             />
-            <a href={gifUrl} download={true}>
-                <button className="w-full btn rounded-md bg-indigo-600 text-white px-4 py-3 mt-5">
-                    Download GIF
-                </button>
+            <a
+                href={gifUrl === 'filesystem' ? '/out.gif' : gifUrl} // serving from public dir if gifUrl is filesystem.
+                download={true}
+                // target={gifUrl === 'filesystem' ? '_blank' : ''}
+                className="w-full block btn rounded-md bg-indigo-600 text-white px-4 py-3 mt-5"
+            >
+                Download GIF
             </a>
         </div>
     );
