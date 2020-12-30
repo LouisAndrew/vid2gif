@@ -8,11 +8,11 @@ const ffmpeg = createFFmpeg({ log: true });
  * Function to actually transcode the mp4 video into gif and then writing into a file into the public directory with the filename of out.gif
  */
 const run = async () => {
-    const { FLAGS } = process.env;
+    const { FLAGS, DIR_PATH } = process.env;
     const flags = FLAGS.split(',');
     const [timeFlag, outputDuration, ...others] = flags;
 
-    const video = fs.readFileSync(path.join(__dirname, 'files', 'in.mp4'));
+    const video = fs.readFileSync(`${DIR_PATH}/in.mp4`);
     await ffmpeg.load();
     ffmpeg.FS('writeFile', 'in.mp4', await fetchFile(video));
 
@@ -30,10 +30,7 @@ const run = async () => {
     const result = await ffmpeg.FS('readFile', 'out.gif', (err, thumb) => {
         console.log({ err, thumb });
     }); // fetch data from fs.
-    await fs.promises.writeFile(
-        path.join(__dirname, 'public', 'out.gif'),
-        result
-    );
+    await fs.promises.writeFile(`${DIR_PATH}/out.gif`, result);
     process.exit(0);
 };
 

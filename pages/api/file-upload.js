@@ -13,10 +13,17 @@ export default (req, res) =>
         const form = formidable({ uploadDir: 'files' });
         form.keepExtensions = true;
 
-        console.log(__dirname);
+        const publicPath =
+            process.env.NODE_ENV === 'production'
+                ? './public'
+                : `${__dirname}/public`;
+
+        const dir = path.resolve(publicPath, 'files');
+
+        const functionPath = path.resolve(publicPath, 'function/transcode.js');
 
         form.on('fileBegin', (name, file) => {
-            file.path = path.join(__dirname, 'files', 'in.mp4');
+            file.path = dir;
         });
 
         form.parse(req, async (err, fields, file) => {
@@ -29,7 +36,7 @@ export default (req, res) =>
 
             const { flags } = fields;
 
-            const command = `FLAGS=${flags} node --experimental-wasm-threads --experimental-wasm-bulk-memory src/functions/transcode.js`;
+            const command = `FLAGS=${flags} DIR_PATH=${dir} node --experimental-wasm-threads --experimental-wasm-bulk-memory ${functionPath}`;
 
             await exec(command, (err, stdout, stderr) => {
                 if (err) {
