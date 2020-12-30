@@ -1,5 +1,6 @@
 import formidable from 'formidable-serverless';
 import multer from 'multer';
+import path from 'path';
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -14,9 +15,7 @@ const upload = multer({ storage: storage });
 
 export const config = {
     api: {
-        bodyParser: {
-            sizeLimit: '100mb',
-        },
+        bodyParser: false,
     },
 };
 
@@ -24,14 +23,19 @@ export default (req, res) =>
     new Promise((resolve, reject) => {
         console.log('Executing promise.');
 
-        const form = new formidable.IncomingForm();
+        const form = formidable({ uploadDir: 'uploads' });
+        form.keepExtensions = true;
 
-        form.parse(req, (err, fields, files) => {
-            if (err) reject(err);
+        form.on('fileBegin', (name, file) => {
+            file.path = path.join('uploads', 'in.mp4');
+        });
 
-            console.log({ fields, files });
-            res.send('Success');
-            resolve({ fields, files });
+        form.parse(req, (err, fields, file) => {
+            console.log('fields:', fields);
+            console.log('files:', file);
+
+            res.send('Done');
+            resolve(null);
         });
     });
 
