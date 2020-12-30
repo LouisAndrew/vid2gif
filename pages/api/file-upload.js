@@ -13,6 +13,8 @@ export default (req, res) =>
         const form = formidable({ uploadDir: 'files' });
         form.keepExtensions = true;
 
+        console.log(__dirname);
+
         form.on('fileBegin', (name, file) => {
             file.path = path.join(__dirname, 'files', 'in.mp4');
         });
