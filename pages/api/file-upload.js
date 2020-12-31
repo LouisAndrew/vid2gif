@@ -15,15 +15,17 @@ export const config = {
 };
 
 export default (req, res) => {
+    const inProduction = process.env.NODE_ENV === 'production';
+
     // const publicPath = path.resolve('./public');
-    const filePath = path.resolve(
-        process.env === 'production' ? '/tmp' : './tmp'
-    );
+    const filePath = path.resolve(inProduction ? '/tmp' : './tmp');
     const functionPath = path.resolve(
-        process.env === 'production'
-            ? './transcode.js'
-            : './pages/api/transcode.js'
+        inProduction ? './transcode.js' : './pages/api/transcode.js'
     );
+
+    if (inProduction) {
+        fs.mkdirSync(path.resolve('/tmp'));
+    }
 
     const form = formidable({ uploadDir: 'public' });
     form.keepExtensions = true;
