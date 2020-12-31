@@ -15,11 +15,15 @@ export const config = {
 };
 
 export default (req, res) => {
-    const publicPath = path.resolve('./public');
+    // const publicPath = path.resolve('./public');
     const filePath = path.resolve(
         process.env === 'production' ? '/tmp' : './tmp'
     );
-    const functionPath = path.resolve(publicPath, 'function/transcode.js');
+    const functionPath = path.resolve(
+        process.env === 'production'
+            ? './transcode.js'
+            : './pages/api/transcode.js'
+    );
 
     const form = formidable({ uploadDir: 'public' });
     form.keepExtensions = true;
@@ -40,7 +44,7 @@ export default (req, res) => {
 
         const command = `FLAGS=${flags} DIR_PATH=${filePath} node --experimental-wasm-threads --experimental-wasm-bulk-memory ${functionPath}`;
         await exec(command, (err, stdout, stderr) => {
-            console.log({ stdout });
+            console.log({ stdout, stderr });
 
             if (err) {
                 res.status(400).send({
