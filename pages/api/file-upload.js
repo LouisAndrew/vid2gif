@@ -20,14 +20,10 @@ export default (req, res) => {
     // const publicPath = path.resolve('./public');
     const filePath = path.resolve(inProduction ? '/tmp' : './tmp');
     const functionPath = path.resolve(
-        inProduction ? '/transcode.js' : './pages/api/transcode.js'
+        inProduction
+            ? './.next/serverless/pages/api/transcode.js'
+            : './pages/api/transcode.js'
     );
-
-    console.log(__dirname);
-
-    // if (inProduction) {
-    //     fs.mkdirSync(path.resolve('/tmp'));
-    // }
 
     const form = formidable({ uploadDir: 'public' });
     form.keepExtensions = true;
@@ -45,11 +41,6 @@ export default (req, res) => {
         }
 
         const { flags } = fields;
-        // console.log(fs.readdirSync(path.resolve('./.next/server/pages/api')));
-        console.log(
-            fs.readdirSync(path.resolve('./.next/serverless/pages/api'))
-        );
-
         const command = `FLAGS=${flags} DIR_PATH=${filePath} node --experimental-wasm-threads --experimental-wasm-bulk-memory ${functionPath}`;
         try {
             await exec(command, (err, stdout, stderr) => {
