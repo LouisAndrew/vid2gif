@@ -1,12 +1,13 @@
-import { exec } from 'child_process';
 import formidable from 'formidable-serverless'; // not sure if I can just use the regular formidable.
 import path from 'path';
-import fs from 'fs';
 import cloudinary from 'cloudinary';
 import dotenv from 'dotenv';
 
+import ffmpegInstaller from '@ffmpeg-installer/ffmpeg';
+import ffmpeg from 'fluent-ffmpeg';
+
 dotenv.config();
-// const { CLOUD_NAME, API_KEY, API_SECRET } = process.env;
+ffmpeg.setFfmpegPath(ffmpegInstaller.path); // setting the path of ffmpeg
 
 export const config = {
     api: {
@@ -17,18 +18,12 @@ export const config = {
 export default (req, res) => {
     const inProduction = process.env.NODE_ENV === 'production';
 
-    // const publicPath = path.resolve('./public');
     const filePath = path.resolve(inProduction ? '/tmp' : './tmp');
-    const functionPath = path.resolve(
-        inProduction
-            ? './.next/serverless/pages/api/transcode.js'
-            : './pages/api/transcode.js'
-    );
 
     const form = formidable({ uploadDir: 'public' });
     form.keepExtensions = true;
 
-    form.on('fileBegin', (name, file) => {
+    form.on('fileBegin', (_, file) => {
         file.path = path.resolve(filePath, 'in.mp4');
     });
 
@@ -41,50 +36,56 @@ export default (req, res) => {
         }
 
         const { flags } = fields;
-        const command = `FLAGS=${flags} DIR_PATH=${filePath} node --experimental-wasm-threads --experimental-wasm-bulk-memory ${functionPath}`;
-        try {
-            await exec(command, (err, stdout, stderr) => {
-                console.log({ stdout, stderr });
 
-                if (err) {
-                    res.status(400).send({
-                        msg: 'Error loading ffmpeg library',
-                    });
-                    // reject(null);
-                    return;
-                } else {
-                    // conversion succesful..
-                    const outputFilePath =
-                        process.env === 'production'
-                            ? '/tmp/out.gif'
-                            : './tmp/out.gif';
+        // conversion succesful..
+        const outputFilePath =
+            process.env === 'production' ? '/tmp/out.gif' : './tmp/out.gif';
 
-                    cloudinary.v2.uploader.upload(
-                        outputFilePath,
-                        { public_id: 'out' }, // setting the filename
-                        (err, result) => {
-                            if (err) {
-                                console.error({ err });
-                                res.status(401).send({
-                                    msg:
-                                        'Error uploading the file. It may be too large',
-                                });
-                                return;
-                            }
+        const [_, outputDuration, ...others] = flags.split(',');
 
-                            if (result) {
-                                const { secure_url } = result;
+        const command = ffmpeg(`${filePath}/in.mp4`)
+            .inputOptions(others)
+            .duration(outputDuration)
+            .outputOption(['-f gif'])
+            .save(outputFilePath);
 
-                                res.setHeader('Content-Type', 'image/gif');
-                                res.status(200).send({ secure_url });
-                                return;
-                            }
+        command.on('error', (err) => {
+            console.log(err);
+            res.status(400).send({ msg: 'Error converting video' });
+            return;
+        });
+
+        command.on('end', () => {
+            console.log('Finished');
+            try {
+                // upload the output file if the video is converted successfully
+                cloudinary.v2.uploader.upload(
+                    outputFilePath,
+                    { public_id: 'out' }, // setting the filename
+                    (err, result) => {
+                        if (err) {
+                            console.error({ err });
+                            res.status(401).send({
+                                msg:
+                                    'Error uploading the file. It may be too large',
+                            });
+                            return;
                         }
-                    );
-                }
-            });
-        } catch (e) {
-            console.log(fs.readdirSync(__dirname));
-        }
+
+                        if (result) {
+                            const { secure_url } = result;
+
+                            res.setHeader('Content-Type', 'image/gif');
+                            res.status(200).send({ secure_url });
+                            return;
+                        }
+                    }
+                );
+            } catch (err) {
+                console.log(err);
+                res.status(400).send({ msg: 'Error converting video' });
+                return;
+            }
+        });
     });
 };
