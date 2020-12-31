@@ -23,9 +23,9 @@ export default (req, res) => {
         inProduction ? './transcode.js' : './pages/api/transcode.js'
     );
 
-    if (inProduction) {
-        fs.mkdirSync(path.resolve('/tmp'));
-    }
+    // if (inProduction) {
+    //     fs.mkdirSync(path.resolve('/tmp'));
+    // }
 
     const form = formidable({ uploadDir: 'public' });
     form.keepExtensions = true;
