@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@craco/craco": "^6.0.0",
+    "@ffmpeg-installer/ffmpeg": "^1.0.20",
     "@ffmpeg/core": "^0.8.5",
     "@ffmpeg/ffmpeg": "^0.9.6",
     "@zeit/next-css": "^1.0.1",
@@ -16,6 +17,7 @@
     "axios": "^0.21.1",
     "cloudinary": "^1.23.0",
     "dotenv": "^8.2.0",
+    "fluent-ffmpeg": "^2.1.2",
     "formidable-serverless": "^1.0.3",
     "gsap": "^3.5.1",
     "next": "10.0.4",
