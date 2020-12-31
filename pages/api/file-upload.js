@@ -20,8 +20,10 @@ export default (req, res) => {
     // const publicPath = path.resolve('./public');
     const filePath = path.resolve(inProduction ? '/tmp' : './tmp');
     const functionPath = path.resolve(
-        inProduction ? './transcode.js' : './pages/api/transcode.js'
+        inProduction ? '/transcode.js' : './pages/api/transcode.js'
     );
+
+    console.log(__dirname);
 
     // if (inProduction) {
     //     fs.mkdirSync(path.resolve('/tmp'));
