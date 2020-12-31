@@ -80,7 +80,7 @@ const Video: FC<Props> = ({ video, convert, showGif }) => {
                         <h4 className="font-sans font-medium text-xl">Video</h4>
                         {showGif && (
                             <button
-                                className="btn font-medium text-indigo-500"
+                                className="btn font-bold text-indigo-500"
                                 onClick={showGif}
                             >
                                 Show GIF
@@ -107,7 +107,7 @@ const Video: FC<Props> = ({ video, convert, showGif }) => {
                     )}
                     {!showSettings && (
                         <button
-                            className="w-full btn rounded-md bg-indigo-600 text-white px-4 py-3 mt-5"
+                            className="w-full btn rounded-md bg-indigo-600 text-white px-4 py-3 mt-5 font-bold"
                             onClick={() => {
                                 setShowSettings(true);
                             }}

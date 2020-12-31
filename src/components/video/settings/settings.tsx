@@ -155,7 +155,7 @@ const Settings: FC<Props> = ({ videoDuration, convertWithSettings }) => {
             </div>
 
             <button
-                className="w-full btn rounded-md bg-indigo-600 text-white px-4 py-3 mt-5"
+                className="w-full btn rounded-md bg-indigo-600 text-white px-4 py-3 mt-5 font-bold"
                 onClick={() => {
                     convertWithSettings(convertionSettings);
                 }}
@@ -167,35 +167,3 @@ const Settings: FC<Props> = ({ videoDuration, convertWithSettings }) => {
 };
 
 export { Settings };
-
-/* <Range
-                step={1}
-                min={0}
-                max={videoDuration || 1}
-                values={[seekStart, videoDuration - seekEnd]}
-                onChange={seek}
-                renderTrack={({ props, children }) => (
-                    <div
-                        {...props}
-                        style={{
-                            ...props.style,
-                            height: '6px',
-                            width: '200px',
-                            backgroundColor: '#ccc',
-                        }}
-                    >
-                        {children}
-                    </div>
-                )}
-                renderThumb={({ props }) => (
-                    <div
-                        {...props}
-                        style={{
-                            ...props.style,
-                            height: '14px',
-                            width: '14px',
-                            backgroundColor: '#999',
-                        }}
-                    />
-                )}
-            /> */

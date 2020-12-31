@@ -22,7 +22,7 @@ const Gif: React.FC<Props> = ({ gifUrl, showVideo }) => {
             <div className="flex flex-row justify-between">
                 <h4 className="font-sans font-medium text-xl">GIF Output</h4>
                 <button
-                    className="btn font-medium text-indigo-500"
+                    className="btn font-bold text-indigo-500"
                     onClick={showVideo}
                 >
                     Show Video
@@ -37,7 +37,7 @@ const Gif: React.FC<Props> = ({ gifUrl, showVideo }) => {
                 href={gifUrl}
                 download={true}
                 target={gifUrl.indexOf('http') !== -1 ? '_blank' : ''} // checking if the gif URL is not served from local filesystem
-                className="w-full block btn rounded-md bg-indigo-600 text-white px-4 py-3 mt-5"
+                className="w-full block btn rounded-md bg-indigo-600 text-white px-4 py-3 mt-5 font-bold"
             >
                 Download GIF
             </a>

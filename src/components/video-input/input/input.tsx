@@ -128,7 +128,7 @@ const Input: React.FC<Props> = ({
                         </div>
                     </>
                 )}
-                <button className="btn bg-indigo-100 border-2 border-solid border-indigo-400 text-indigo-400 px-4 py-3 rounded-md xl:w-full">
+                <button className="btn font-bold bg-indigo-100 border-2 border-solid border-indigo-400 text-indigo-400 px-4 py-3 rounded-md xl:w-full">
                     Select {isVideoIn && 'Another'} File
                 </button>
             </div>
