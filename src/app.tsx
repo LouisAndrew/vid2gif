@@ -36,6 +36,14 @@ export enum AppState {
      * When there's an error in the app
      */
     ERROR = 99,
+    /**
+     * If there's an error while uploading output image on the cloudinary
+     */
+    ERROR_UPLOAD = 401,
+    /**
+     * Error while converting on the server side.
+     */
+    ERROR_SERVER_CONVERSION = 404,
 }
 
 enum FFMPEGLoadState {
@@ -71,7 +79,7 @@ function App() {
     // Boolean identifier to identify if the video should be converted on server.
     const [convertWithApi, setConvertWithApi] = useState(false);
 
-    const debugFallback = false; // debug purposes for firefox.
+    const debugFallback = true; // debug purposes for firefox.
 
     /**
      * Loads the ffmpeg library
@@ -115,18 +123,36 @@ function App() {
 
         try {
             // hitting the api route from next js.
-            await axios({
+            const res = await axios({
                 method: 'POST',
                 url: '/api/file-upload',
                 data: formData,
-                headers: { 'Content-Type': 'multipart/form-data' },
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
             });
 
-            await setGifUrl('filesystem'); // filesystem means that gif should be served from public directory
+            const {
+                data: { secure_url },
+            } = await res;
+
+            await setGifUrl(secure_url);
+
             await setState(AppState.DONE);
             await setShowGif(true);
         } catch (e) {
-            console.error(e);
+            const { response } = e;
+
+            if (response) {
+                const { status } = response;
+                if (status === 401) {
+                    setState(AppState.ERROR_UPLOAD);
+                } else {
+                    setState(AppState.ERROR_SERVER_CONVERSION);
+                }
+            } else {
+                setState(AppState.ERROR);
+            }
         }
     };
 
@@ -203,101 +229,110 @@ function App() {
     return (
         <div className="app relative w-full min-h-screen bg-gray-100 flex items-center justify-center p-5">
             <div className="wrapper w-full sm:w-4/5 md:max-w-xl">
-                {ffmpegLoadState === FFMPEGLoadState.READY ? (
-                    <div className="wrapper text-center w-full ">
-                        <Text state={state} />
-                        <div className="data-wrapper p-3 bg-white shadow-2xl rounded-md w-full transition-all sm:p-5">
-                            <VideoInput
-                                isVideoIn={video !== null}
-                                setVideo={handleChangeVideo}
-                                fileName={video?.name}
-                                disableUpload={state === AppState.CONVERTING}
+                {
+                    ffmpegLoadState === FFMPEGLoadState.LOADING ? (
+                        <div className="flex flex-col items-center">
+                            <Loader
+                                type="Oval"
+                                color="#4F46E5"
+                                height={100}
+                                width={100}
                             />
-                            <div className="flex flex-nowrap overflow-hidden transition-all relative">
-                                {state === AppState.CONVERTING && (
-                                    <>
-                                        <div className="w-full h-full absolute z-50 left-0 top-0 flex  flex-col items-center justify-center loading-screen">
-                                            <Loader
-                                                type="Oval"
-                                                color="#4F46E5"
-                                                height={100}
-                                                width={100}
-                                            />
-                                            <h2 className="text-xl mt-5 font-bold">
-                                                Converting..
-                                                {video?.size &&
-                                                video?.size > 10000000 ? ( // check if the size of the video is more than 10MB
-                                                    <>
-                                                        <br />
-                                                        <span className="text-base font-medium text-gray-600">
-                                                            The size of the
-                                                            uploaded video is
-                                                            more than 10MB. It
-                                                            would take longer
-                                                            than usual.
-                                                        </span>
-                                                    </>
-                                                ) : null}
-                                            </h2>
-                                        </div>
-                                    </>
-                                )}
-
-                                {state !== AppState.DEFAULT &&
-                                state !== AppState.ERROR &&
-                                video ? (
-                                    <CSSTransition
-                                        in={!showGif}
-                                        unmountOnExit={true}
-                                        timeout={200}
-                                        classNames="video"
-                                    >
+                            <h2 className="text-xl mt-5 font-bold">
+                                Loading FFMPEG Library
+                            </h2>
+                        </div> // shows loading page
+                    ) : (
+                        <div className="wrapper text-center w-full ">
+                            <Text state={state} />
+                            <div className="data-wrapper p-3 bg-white shadow-2xl rounded-md w-full transition-all sm:p-5">
+                                <VideoInput
+                                    isVideoIn={video !== null}
+                                    setVideo={handleChangeVideo}
+                                    fileName={video?.name}
+                                    disableUpload={
+                                        state === AppState.CONVERTING
+                                    }
+                                />
+                                <div className="flex flex-nowrap overflow-hidden transition-all relative">
+                                    {state === AppState.CONVERTING && (
                                         <>
-                                            <Video
-                                                video={video}
-                                                convert={convert}
-                                                showGif={
-                                                    gifUrl
-                                                        ? () => {
-                                                              setShowGif(true);
-                                                          }
-                                                        : undefined
-                                                }
-                                            />
+                                            <div className="w-full h-full absolute z-50 left-0 top-0 flex  flex-col items-center justify-center loading-screen">
+                                                <Loader
+                                                    type="Oval"
+                                                    color="#4F46E5"
+                                                    height={100}
+                                                    width={100}
+                                                />
+                                                <h2 className="text-xl mt-5 font-bold">
+                                                    Converting..
+                                                    {video?.size &&
+                                                    video?.size > 10000000 ? ( // check if the size of the video is more than 10MB
+                                                        <>
+                                                            <br />
+                                                            <span className="text-base font-medium text-gray-600">
+                                                                The size of the
+                                                                uploaded video
+                                                                is more than
+                                                                10MB. It would
+                                                                take longer than
+                                                                usual.
+                                                            </span>
+                                                        </>
+                                                    ) : null}
+                                                </h2>
+                                            </div>
                                         </>
-                                    </CSSTransition>
-                                ) : null}
-                                {state === AppState.DONE && (
-                                    <CSSTransition
-                                        in={showGif}
-                                        unmountOnExit={true}
-                                        timeout={200}
-                                        classNames="gif"
-                                    >
-                                        <Gif
-                                            gifUrl={gifUrl}
-                                            showVideo={() => {
-                                                setShowGif(false);
-                                            }}
-                                        />
-                                    </CSSTransition>
-                                )}
+                                    )}
+
+                                    {state !== AppState.DEFAULT &&
+                                    state !== AppState.ERROR &&
+                                    video ? (
+                                        <CSSTransition
+                                            in={!showGif}
+                                            unmountOnExit={true}
+                                            timeout={200}
+                                            classNames="video"
+                                        >
+                                            <>
+                                                <Video
+                                                    video={video}
+                                                    convert={convert}
+                                                    showGif={
+                                                        gifUrl
+                                                            ? () => {
+                                                                  setShowGif(
+                                                                      true
+                                                                  );
+                                                              }
+                                                            : undefined
+                                                    }
+                                                />
+                                            </>
+                                        </CSSTransition>
+                                    ) : null}
+                                    {state === AppState.DONE && (
+                                        <CSSTransition
+                                            in={showGif}
+                                            unmountOnExit={true}
+                                            timeout={200}
+                                            classNames="gif"
+                                        >
+                                            <Gif
+                                                gifUrl={gifUrl}
+                                                showVideo={() => {
+                                                    setShowGif(false);
+                                                }}
+                                            />
+                                        </CSSTransition>
+                                    )}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                ) : ffmpegLoadState === FFMPEGLoadState.LOADING ? (
-                    <div className="flex flex-col items-center">
-                        <Loader
-                            type="Oval"
-                            color="#4F46E5"
-                            height={100}
-                            width={100}
-                        />
-                        <h2 className="text-xl mt-5 font-bold">
-                            Loading FFMPEG Library
-                        </h2>
-                    </div> // shows loading page
-                ) : (
+                    )
+                    /*
+                    ERROR COMPONENT SNIPPET
+                    (
                     <div className="flex flex-col items-center text-center">
                         <h1 className="text-2xl mb-5 font-bold">
                             FFMPEG Library cannot be loaded. 😞
@@ -317,7 +352,8 @@ function App() {
                         </button>
                     </div>
                     //Show error page
-                )}
+                ) */
+                }
             </div>
         </div>
     );

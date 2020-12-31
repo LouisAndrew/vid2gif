@@ -40,6 +40,16 @@ const messages = {
         bodyMsg:
             'An error occurred. Please refresh the page. Sorry for the inconvenience',
     },
+    401: {
+        headerMsg: 'Error while uploading the output file 😔',
+        bodyMsg:
+            "There's an error occured while trying to upload the output file. Our cloud provider restricted its upload file size to 10Mb and the output file is too large to upload. Maybe try to speed up the output file or reduce the duration?",
+    },
+    404: {
+        headerMsg: 'Error while uploading the converting file 😔',
+        bodyMsg:
+            'An error occured while trying to convert the file on our server. The file is too large for us to handle it.',
+    },
 };
 
 export default messages;
