@@ -47,45 +47,49 @@ export default (req, res) => {
         const { flags } = fields;
 
         const command = `FLAGS=${flags} DIR_PATH=${filePath} node --experimental-wasm-threads --experimental-wasm-bulk-memory ${functionPath}`;
-        await exec(command, (err, stdout, stderr) => {
-            console.log({ stdout, stderr });
+        try {
+            await exec(command, (err, stdout, stderr) => {
+                console.log({ stdout, stderr });
 
-            if (err) {
-                res.status(400).send({
-                    msg: 'Error loading ffmpeg library',
-                });
-                // reject(null);
-                return;
-            } else {
-                // conversion succesful..
-                const outputFilePath =
-                    process.env === 'production'
-                        ? '/tmp/out.gif'
-                        : './tmp/out.gif';
+                if (err) {
+                    res.status(400).send({
+                        msg: 'Error loading ffmpeg library',
+                    });
+                    // reject(null);
+                    return;
+                } else {
+                    // conversion succesful..
+                    const outputFilePath =
+                        process.env === 'production'
+                            ? '/tmp/out.gif'
+                            : './tmp/out.gif';
 
-                cloudinary.v2.uploader.upload(
-                    outputFilePath,
-                    { public_id: 'out' }, // setting the filename
-                    (err, result) => {
-                        if (err) {
-                            console.error({ err });
-                            res.status(401).send({
-                                msg:
-                                    'Error uploading the file. It may be too large',
-                            });
-                            return;
+                    cloudinary.v2.uploader.upload(
+                        outputFilePath,
+                        { public_id: 'out' }, // setting the filename
+                        (err, result) => {
+                            if (err) {
+                                console.error({ err });
+                                res.status(401).send({
+                                    msg:
+                                        'Error uploading the file. It may be too large',
+                                });
+                                return;
+                            }
+
+                            if (result) {
+                                const { secure_url } = result;
+
+                                res.setHeader('Content-Type', 'image/gif');
+                                res.status(200).send({ secure_url });
+                                return;
+                            }
                         }
-
-                        if (result) {
-                            const { secure_url } = result;
-
-                            res.setHeader('Content-Type', 'image/gif');
-                            res.status(200).send({ secure_url });
-                            return;
-                        }
-                    }
-                );
-            }
-        });
+                    );
+                }
+            });
+        } catch (e) {
+            console.log(fs.readdirSync(__dirname));
+        }
     });
 };
