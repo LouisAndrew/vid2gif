@@ -45,6 +45,7 @@ export default (req, res) => {
         }
 
         const { flags } = fields;
+        console.log(fs.readdirSync(__dirname));
 
         const command = `FLAGS=${flags} DIR_PATH=${filePath} node --experimental-wasm-threads --experimental-wasm-bulk-memory ${functionPath}`;
         try {
