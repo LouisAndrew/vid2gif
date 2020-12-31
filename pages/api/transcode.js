@@ -1,6 +1,7 @@
 const fs = require('fs');
-const path = require('path');
+// const path = require('path');
 const { createFFmpeg, fetchFile } = require('@ffmpeg/ffmpeg');
+require('@ffmpeg/core');
 
 const ffmpeg = createFFmpeg();
 
