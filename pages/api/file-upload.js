@@ -46,7 +46,7 @@ export default (req, res) => {
 
         const { flags } = fields;
         // console.log(fs.readdirSync(path.resolve('./.next/server/pages/api')));
-        console.log(fs.readdirSync(path.resolve('.')));
+        console.log(fs.readdirSync(path.resolve('./.next')));
 
         const command = `FLAGS=${flags} DIR_PATH=${filePath} node --experimental-wasm-threads --experimental-wasm-bulk-memory ${functionPath}`;
         try {
