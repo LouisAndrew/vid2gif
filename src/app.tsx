@@ -79,7 +79,7 @@ function App() {
     // Boolean identifier to identify if the video should be converted on server.
     const [convertWithApi, setConvertWithApi] = useState(false);
 
-    const debugFallback = true; // debug purposes for firefox.
+    const debugFallback = false; // debug purposes for firefox.
 
     /**
      * Loads the ffmpeg library

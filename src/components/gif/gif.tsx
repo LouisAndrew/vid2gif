@@ -30,13 +30,13 @@ const Gif: React.FC<Props> = ({ gifUrl, showVideo }) => {
             </div>
             <img
                 className="rounded-md shadow-2xl overflow-hidden my-2"
-                src={gifUrl === 'filesystem' ? '/out.gif' : gifUrl} // serving from public dir if gifUrl is filesystem.
+                src={gifUrl}
                 alt="output GIF"
             />
             <a
-                href={gifUrl === 'filesystem' ? '/out.gif' : gifUrl} // serving from public dir if gifUrl is filesystem.
+                href={gifUrl}
                 download={true}
-                // target={gifUrl === 'filesystem' ? '_blank' : ''}
+                target={gifUrl.indexOf('http') !== -1 ? '_blank' : ''} // checking if the gif URL is not served from local filesystem
                 className="w-full block btn rounded-md bg-indigo-600 text-white px-4 py-3 mt-5"
             >
                 Download GIF
