@@ -19,12 +19,14 @@ export default (req, res) => {
     const inProduction = process.env.NODE_ENV === 'production';
 
     const filePath = path.resolve(inProduction ? '/tmp' : './tmp');
+    const outputFilePath = inProduction ? '/tmp/out.gif' : './tmp/out.gif';
+    const inputFilePath = path.resolve(filePath, 'in.mp4');
 
-    const form = formidable({ uploadDir: 'public' });
+    const form = formidable();
     form.keepExtensions = true;
 
     form.on('fileBegin', (_, file) => {
-        file.path = path.resolve(filePath, 'in.mp4');
+        file.path = inputFilePath;
     });
 
     form.parse(req, async (err, fields, file) => {
@@ -38,12 +40,10 @@ export default (req, res) => {
         const { flags } = fields;
 
         // conversion succesful..
-        const outputFilePath =
-            process.env === 'production' ? '/tmp/out.gif' : './tmp/out.gif';
 
         const [_, outputDuration, ...others] = flags.split(',');
 
-        const command = ffmpeg(`${filePath}/in.mp4`)
+        const command = ffmpeg(inputFilePath)
             .inputOptions(others)
             .duration(outputDuration)
             .outputOption(['-f gif'])
