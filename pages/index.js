@@ -47,6 +47,7 @@ const Home = () => (
                 content="/icons/browserconfig.xml"
             />
             <meta name="theme-color" content="#ffffff" />
+            <title>Vid2GIF</title>
         </Head>
         <main>
             <App />
