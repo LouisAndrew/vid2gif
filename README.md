@@ -6,8 +6,8 @@ This applicatoion is highly inspired by a webassembly tutorial by fireship.io ht
 - Slower conversion
 - Input video should not really be too large, up to 1.5 GB (`JavaScript heap out of memory` Error). Reference about NodeJS memory limitation click (here)[https://medium.com/@ashleydavis75/node-js-memory-limitations-30d3fe2664c0]
 
-###Ffmpeg library used here
-- @ffmpeg/core
-- @ffmpeg/ffmpeg
-- fluent-ffmpeg
-- @ffmpeg-instaler/ffmpeg
+### Ffmpeg library used here
+- @ffmpeg/core (Client side)
+- @ffmpeg/ffmpeg (Client side)
+- fluent-ffmpeg (Server side)
+- @ffmpeg-instaler/ffmpeg (Server side)
